@@ -43,8 +43,8 @@ export const products: Product[] = [
   {
     id: "1",
     name: "Robe Élégante Fleurie",
-    price: 89.99,
-    originalPrice: 129.99,
+    price: 450000,
+    originalPrice: 650000,
     description: "Une robe magnifique avec des motifs floraux délicats, parfaite pour les occasions spéciales. Tissu léger et confortable.",
     category: "robes",
     images: [
@@ -65,7 +65,7 @@ export const products: Product[] = [
   {
     id: "2",
     name: "Blouse Satin Luxe",
-    price: 59.99,
+    price: 300000,
     description: "Blouse en satin de haute qualité avec une coupe élégante. Idéale pour le bureau ou les sorties.",
     category: "tops",
     images: [
@@ -83,7 +83,7 @@ export const products: Product[] = [
   {
     id: "3",
     name: "Pantalon Palazzo Fluide",
-    price: 79.99,
+    price: 400000,
     description: "Pantalon palazzo ultra confortable avec une taille haute et une coupe fluide.",
     category: "pantalons",
     images: [
@@ -102,8 +102,8 @@ export const products: Product[] = [
   {
     id: "4",
     name: "Escarpins Élégants",
-    price: 119.99,
-    originalPrice: 149.99,
+    price: 600000,
+    originalPrice: 750000,
     description: "Escarpins classiques avec un talon confortable de 7cm. Parfaits pour toutes les occasions.",
     category: "chaussures",
     images: [
@@ -122,7 +122,7 @@ export const products: Product[] = [
   {
     id: "5",
     name: "Sac à Main Cuir Premium",
-    price: 159.99,
+    price: 800000,
     description: "Sac à main en cuir véritable avec des finitions dorées. Spacieux et élégant.",
     category: "sacs",
     images: [
@@ -140,7 +140,7 @@ export const products: Product[] = [
   {
     id: "6",
     name: "Robe Longue Bohème",
-    price: 99.99,
+    price: 500000,
     description: "Robe longue style bohème avec des détails brodés. Parfaite pour l'été.",
     category: "robes",
     images: [
@@ -158,7 +158,7 @@ export const products: Product[] = [
   {
     id: "7",
     name: "Top Crop Tendance",
-    price: 39.99,
+    price: 200000,
     description: "Top crop moderne avec une coupe flatteuse. Parfait avec un jean taille haute.",
     category: "tops",
     images: [
@@ -176,7 +176,7 @@ export const products: Product[] = [
   {
     id: "8",
     name: "Sneakers Élégantes",
-    price: 89.99,
+    price: 450000,
     description: "Sneakers confortables avec un design épuré. Parfaites pour un look casual chic.",
     category: "chaussures",
     images: [

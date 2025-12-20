@@ -81,11 +81,11 @@ export const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
             {/* Price */}
             <div className="flex items-center gap-2">
               <span className="font-display text-lg font-semibold text-primary">
-                {product.price.toLocaleString('fr-FR')} FCFA
+                {product.price.toLocaleString('fr-GN')} GNF
               </span>
               {product.originalPrice && (
                 <span className="text-sm text-muted-foreground line-through">
-                  {product.originalPrice.toLocaleString('fr-FR')} FCFA
+                  {product.originalPrice.toLocaleString('fr-GN')} GNF
                 </span>
               )}
             </div>

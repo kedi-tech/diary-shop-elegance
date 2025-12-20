@@ -210,11 +210,11 @@ const ProductPage = () => {
             {/* Price */}
             <div className="flex items-center gap-3 mb-6">
               <span className="font-display text-3xl font-bold text-primary">
-                {product.price.toLocaleString('fr-FR')} FCFA
+                {product.price.toLocaleString('fr-GN')} GNF
               </span>
               {product.originalPrice && (
                 <span className="text-xl text-muted-foreground line-through">
-                  {product.originalPrice.toLocaleString('fr-FR')} FCFA
+                  {product.originalPrice.toLocaleString('fr-GN')} GNF
                 </span>
               )}
             </div>
@@ -302,7 +302,7 @@ const ProductPage = () => {
 
             {/* Add to Cart */}
             <Button variant="cart" size="xl" onClick={handleAddToCart} className="mb-8">
-              Ajouter au panier • {(product.price * quantity).toLocaleString('fr-FR')} FCFA
+              Ajouter au panier • {(product.price * quantity).toLocaleString('fr-GN')} GNF
             </Button>
 
             {/* Features */}
