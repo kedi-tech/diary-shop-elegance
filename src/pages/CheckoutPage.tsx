@@ -39,7 +39,7 @@ const CheckoutPage = () => {
     (sum, item) => sum + item.product.price * item.quantity,
     0
   );
-  const shipping = subtotal >= 50000 ? 0 : 2500;
+  const shipping = subtotal >= 2500000 ? 0 : 125000;
   const total = totalPrice + shipping;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -321,7 +321,7 @@ const CheckoutPage = () => {
                           {item.selectedSize} • {item.selectedColor.name} • x{item.quantity}
                         </p>
                         <p className="text-sm font-medium text-primary mt-1">
-                          {(item.product.price * item.quantity).toLocaleString('fr-FR')} FCFA
+                          {(item.product.price * item.quantity).toLocaleString('fr-GN')} GNF
                         </p>
                       </div>
                     </div>
@@ -332,25 +332,25 @@ const CheckoutPage = () => {
                 <div className="space-y-3 border-t border-border pt-4 mb-6">
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Sous-total</span>
-                    <span>{subtotal.toLocaleString('fr-FR')} FCFA</span>
+                    <span>{subtotal.toLocaleString('fr-GN')} GNF</span>
                   </div>
                   {discount > 0 && (
                     <div className="flex justify-between text-sm text-primary">
                       <span>Réduction (-{discount}%)</span>
-                      <span>-{((subtotal * discount) / 100).toLocaleString('fr-FR')} FCFA</span>
+                      <span>-{((subtotal * discount) / 100).toLocaleString('fr-GN')} GNF</span>
                     </div>
                   )}
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Livraison</span>
                     <span className="text-primary font-medium">
-                      {shipping === 0 ? "Gratuite" : `${shipping.toLocaleString('fr-FR')} FCFA`}
+                      {shipping === 0 ? "Gratuite" : `${shipping.toLocaleString('fr-GN')} GNF`}
                     </span>
                   </div>
                   <div className="border-t border-border pt-3">
                     <div className="flex justify-between">
                       <span className="font-medium">Total</span>
                       <span className="font-display text-xl font-bold text-primary">
-                        {total.toLocaleString('fr-FR')} FCFA
+                        {total.toLocaleString('fr-GN')} GNF
                       </span>
                     </div>
                   </div>

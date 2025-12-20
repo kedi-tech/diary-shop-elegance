@@ -180,7 +180,7 @@ const CartPage = () => {
                         <div className="flex items-center gap-4">
                           {/* Price */}
                           <span className="font-display text-lg font-semibold text-primary">
-                            {(item.product.price * item.quantity).toLocaleString('fr-FR')} FCFA
+                            {(item.product.price * item.quantity).toLocaleString('fr-GN')} GNF
                           </span>
 
                           {/* Remove */}
@@ -235,25 +235,25 @@ const CartPage = () => {
               <div className="space-y-3 mb-6">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Sous-total</span>
-                  <span>{subtotal.toLocaleString('fr-FR')} FCFA</span>
+                  <span>{subtotal.toLocaleString('fr-GN')} GNF</span>
                 </div>
                 {discount > 0 && (
                   <div className="flex justify-between text-sm text-primary">
                     <span>Réduction (-{discount}%)</span>
-                    <span>-{((subtotal * discount) / 100).toLocaleString('fr-FR')} FCFA</span>
+                    <span>-{((subtotal * discount) / 100).toLocaleString('fr-GN')} GNF</span>
                   </div>
                 )}
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Livraison</span>
                   <span className="text-primary font-medium">
-                    {subtotal >= 50000 ? "Gratuite" : "2 500 FCFA"}
+                    {subtotal >= 2500000 ? "Gratuite" : "125 000 GNF"}
                   </span>
                 </div>
                 <div className="border-t border-border pt-3">
                   <div className="flex justify-between">
                     <span className="font-medium">Total</span>
                     <span className="font-display text-xl font-bold text-primary">
-                      {(totalPrice + (subtotal < 50000 ? 2500 : 0)).toLocaleString('fr-FR')} FCFA
+                      {(totalPrice + (subtotal < 2500000 ? 125000 : 0)).toLocaleString('fr-GN')} GNF
                     </span>
                   </div>
                 </div>
@@ -269,7 +269,7 @@ const CartPage = () => {
 
               {/* Info */}
               <p className="text-xs text-center text-muted-foreground">
-                Livraison gratuite à partir de 50 000 FCFA
+                Livraison gratuite à partir de 2 500 000 GNF
               </p>
             </div>
           </div>
