@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { CartItem, Product, ProductColor } from "@/types/product";
 
+type DiscountType = "PERCENTAGE" | "FIXED";
+
 interface CartContextType {
   items: CartItem[];
   addToCart: (product: Product, size: string, color: ProductColor, quantity?: number) => void;
@@ -8,19 +10,16 @@ interface CartContextType {
   updateQuantity: (productId: string, size: string, colorName: string, quantity: number) => void;
   clearCart: () => void;
   totalItems: number;
+  subtotal: number;
   totalPrice: number;
   promoCode: string;
-  applyPromoCode: (code: string) => boolean;
   discount: number;
+  discountType: DiscountType;
+  discountAmount: number;
+  setPromoDiscount: (code: string, value: number, type: DiscountType) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
-
-const PROMO_CODES: Record<string, number> = {
-  "DIARY10": 10,
-  "DIARY20": 20,
-  "NEWCLIENT": 15,
-};
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>(() => {
@@ -29,6 +28,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
   const [promoCode, setPromoCode] = useState("");
   const [discount, setDiscount] = useState(0);
+  const [discountType, setDiscountType] = useState<DiscountType>("PERCENTAGE");
 
   useEffect(() => {
     localStorage.setItem("diary-cart", JSON.stringify(items));
@@ -37,28 +37,26 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const addToCart = (product: Product, size: string, color: ProductColor, quantity = 1) => {
     setItems(prev => {
       const existingIndex = prev.findIndex(
-        item => 
-          item.product.id === product.id && 
-          item.selectedSize === size && 
+        item =>
+          item.product.id === product.id &&
+          item.selectedSize === size &&
           item.selectedColor.name === color.name
       );
-
       if (existingIndex > -1) {
         const updated = [...prev];
         updated[existingIndex].quantity += quantity;
         return updated;
       }
-
       return [...prev, { product, quantity, selectedSize: size, selectedColor: color }];
     });
   };
 
   const removeFromCart = (productId: string, size: string, colorName: string) => {
-    setItems(prev => 
+    setItems(prev =>
       prev.filter(
-        item => 
-          !(item.product.id === productId && 
-            item.selectedSize === size && 
+        item =>
+          !(item.product.id === productId &&
+            item.selectedSize === size &&
             item.selectedColor.name === colorName)
       )
     );
@@ -69,11 +67,10 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       removeFromCart(productId, size, colorName);
       return;
     }
-
     setItems(prev =>
       prev.map(item =>
-        item.product.id === productId && 
-        item.selectedSize === size && 
+        item.product.id === productId &&
+        item.selectedSize === size &&
         item.selectedColor.name === colorName
           ? { ...item, quantity }
           : item
@@ -85,26 +82,28 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setItems([]);
     setPromoCode("");
     setDiscount(0);
+    setDiscountType("PERCENTAGE");
   };
 
-  const applyPromoCode = (code: string): boolean => {
-    const upperCode = code.toUpperCase();
-    if (PROMO_CODES[upperCode]) {
-      setPromoCode(upperCode);
-      setDiscount(PROMO_CODES[upperCode]);
-      return true;
-    }
-    return false;
+  const setPromoDiscount = (code: string, value: number, type: DiscountType) => {
+    setPromoCode(code.toUpperCase());
+    setDiscount(value);
+    setDiscountType(type);
   };
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
-  
+
   const subtotal = items.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
     0
   );
 
-  const totalPrice = subtotal - (subtotal * discount / 100);
+  const discountAmount =
+    discountType === "PERCENTAGE"
+      ? (subtotal * discount) / 100
+      : Math.min(discount, subtotal);
+
+  const totalPrice = Math.max(0, subtotal - discountAmount);
 
   return (
     <CartContext.Provider
@@ -115,10 +114,13 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         updateQuantity,
         clearCart,
         totalItems,
+        subtotal,
         totalPrice,
         promoCode,
-        applyPromoCode,
         discount,
+        discountType,
+        discountAmount,
+        setPromoDiscount,
       }}
     >
       {children}
@@ -128,8 +130,6 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 export const useCart = () => {
   const context = useContext(CartContext);
-  if (!context) {
-    throw new Error("useCart must be used within a CartProvider");
-  }
+  if (!context) throw new Error("useCart must be used within a CartProvider");
   return context;
 };

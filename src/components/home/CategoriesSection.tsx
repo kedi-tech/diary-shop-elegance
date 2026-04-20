@@ -1,9 +1,21 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import { categories } from "@/data/products";
+import { getCategories } from "@/api/categories";
+import { useEffect, useState } from "react";
+import { Category } from "@/types/product";
 
 export const CategoriesSection = () => {
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    getCategories().then((data) => {
+      if (Array.isArray(data)) setCategories(data);
+    });
+  }, []);
+
+  const visibleCategories = categories.slice(0, 5);
+
   return (
     <section className="section-padding bg-muted/30">
       <div className="container-custom px-4">
@@ -28,42 +40,53 @@ export const CategoriesSection = () => {
         </div>
 
         {/* Categories Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
-          {categories.map((category, index) => (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+          {visibleCategories.map((category, index) => (
             <motion.div
               key={category.id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
+              transition={{ delay: index * 0.08 }}
             >
               <Link
                 to={`/catalogue?category=${category.id}`}
                 className="group block"
               >
-                <div className="relative aspect-square rounded-2xl overflow-hidden bg-muted">
-                  <img
-                    src={category.image}
-                    alt={category.name}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/20 to-transparent" />
-                  
-                  <div className="absolute inset-0 flex flex-col items-center justify-end p-4">
-                    <h3 className="font-display text-lg font-semibold text-background text-center">
-                      {category.name}
-                    </h3>
-                    <div className="mt-2 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all">
-                      <span className="inline-flex items-center gap-1 text-sm text-background/90">
-                        Voir
-                        <ArrowRight className="h-4 w-4" />
-                      </span>
-                    </div>
-                  </div>
+                <div className="flex flex-col items-center justify-between gap-3 rounded-2xl border border-border bg-card px-4 py-6 text-center transition-all duration-300 hover:border-primary hover:shadow-md hover:-translate-y-1">
+                  <h3 className="font-display text-base font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">
+                    {category.name}
+                  </h3>
+                  <span className="inline-flex items-center gap-1 text-xs text-muted-foreground group-hover:text-primary transition-colors">
+                    Voir
+                    <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
+                  </span>
                 </div>
               </Link>
             </motion.div>
           ))}
+
+          {/* "All categories" card */}
+          {categories.length > 5 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 5 * 0.08 }}
+            >
+              <Link to="/catalogue" className="group block">
+                <div className="flex flex-col items-center justify-between gap-3 rounded-2xl border border-dashed border-primary/40 bg-primary/5 px-4 py-6 text-center transition-all duration-300 hover:border-primary hover:bg-primary/10 hover:shadow-md hover:-translate-y-1">
+                  <h3 className="font-display text-base font-semibold text-primary line-clamp-2">
+                    Toutes les catégories
+                  </h3>
+                  <span className="inline-flex items-center gap-1 text-xs text-primary">
+                    Explorer
+                    <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
+                  </span>
+                </div>
+              </Link>
+            </motion.div>
+          )}
         </div>
       </div>
     </section>

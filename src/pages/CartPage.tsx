@@ -1,47 +1,61 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Minus, Plus, Trash2, ShoppingBag, Tag, ArrowRight, ChevronLeft } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingBag, Tag, ArrowRight, ChevronLeft, Loader2 } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { validatePromoCode } from "@/api/promoCodes";
 
 const CartPage = () => {
-  const { 
-    items, 
-    updateQuantity, 
-    removeFromCart, 
-    totalPrice, 
+  const {
+    items,
+    updateQuantity,
+    removeFromCart,
+    totalPrice,
     totalItems,
+    subtotal,
     promoCode,
-    applyPromoCode,
-    discount
+    setPromoDiscount,
+    discount,
+    discountType,
+    discountAmount,
   } = useCart();
+  const { token } = useAuth();
   const { toast } = useToast();
   const [promoInput, setPromoInput] = useState("");
+  const [promoLoading, setPromoLoading] = useState(false);
 
-  const handleApplyPromo = () => {
-    if (applyPromoCode(promoInput)) {
-      toast({
-        title: "Code promo appliqué",
-        description: `Vous bénéficiez de ${discount}% de réduction`,
-      });
+  const handleApplyPromo = async () => {
+    const code = promoInput.trim();
+    if (!code) return;
+    setPromoLoading(true);
+    try {
+      const result = await validatePromoCode(code, subtotal, token ?? undefined);
+      const type = result.discountType ?? result.type ?? "PERCENTAGE";
+      const value = result.discountValue ?? result.value ?? result.discount ?? result.discountAmount ?? 0;
+      setPromoDiscount(code, value, type as "PERCENTAGE" | "FIXED");
+      const label =
+        type === "PERCENTAGE"
+          ? `Vous bénéficiez de ${value}% de réduction`
+          : `Réduction de ${value.toLocaleString("fr-GN")} GNF appliquée`;
+      toast({ title: "Code promo appliqué !", description: label });
       setPromoInput("");
-    } else {
+    } catch (err: any) {
       toast({
         title: "Code invalide",
-        description: "Ce code promo n'existe pas ou a expiré",
+        description: err?.message ?? "Ce code promo n'existe pas ou a expiré.",
         variant: "destructive",
       });
+    } finally {
+      setPromoLoading(false);
     }
   };
 
-  const subtotal = items.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
-    0
-  );
+  const shipping = subtotal >= 2500000 ? 0 : 125000;
 
   if (items.length === 0) {
     return (
@@ -102,7 +116,7 @@ const CartPage = () => {
           Mon Panier ({totalItems} article{totalItems !== 1 ? "s" : ""})
         </h1>
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
             <AnimatePresence>
@@ -205,7 +219,7 @@ const CartPage = () => {
 
           {/* Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-card rounded-xl p-6 shadow-card sticky top-28">
+            <div className="bg-card rounded-xl p-4 sm:p-6 shadow-card lg:sticky lg:top-28">
               <h2 className="font-display text-xl font-semibold mb-6">Récapitulatif</h2>
 
               {/* Promo Code */}
@@ -217,16 +231,21 @@ const CartPage = () => {
                       placeholder="Code promo"
                       value={promoInput}
                       onChange={(e) => setPromoInput(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleApplyPromo()}
                       className="pl-10"
+                      disabled={promoLoading}
                     />
                   </div>
-                  <Button variant="outline" onClick={handleApplyPromo}>
-                    Appliquer
+                  <Button variant="outline" onClick={handleApplyPromo} disabled={promoLoading || !promoInput.trim()}>
+                    {promoLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Appliquer"}
                   </Button>
                 </div>
                 {promoCode && (
                   <p className="text-sm text-primary mt-2">
-                    Code {promoCode} appliqué (-{discount}%)
+                    Code <span className="font-semibold">{promoCode}</span> appliqué —{" "}
+                    {discountType === "PERCENTAGE"
+                      ? `-${discount}%`
+                      : `-${discount.toLocaleString("fr-GN")} GNF`}
                   </p>
                 )}
               </div>
@@ -237,23 +256,25 @@ const CartPage = () => {
                   <span className="text-muted-foreground">Sous-total</span>
                   <span>{subtotal.toLocaleString('fr-GN')} GNF</span>
                 </div>
-                {discount > 0 && (
+                {discountAmount > 0 && (
                   <div className="flex justify-between text-sm text-primary">
-                    <span>Réduction (-{discount}%)</span>
-                    <span>-{((subtotal * discount) / 100).toLocaleString('fr-GN')} GNF</span>
+                    <span>
+                      Réduction{discountType === "PERCENTAGE" ? ` (-${discount}%)` : ""}
+                    </span>
+                    <span>-{discountAmount.toLocaleString('fr-GN')} GNF</span>
                   </div>
                 )}
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Livraison</span>
                   <span className="text-primary font-medium">
-                    {subtotal >= 2500000 ? "Gratuite" : "125 000 GNF"}
+                    {shipping === 0 ? "Gratuite" : "125 000 GNF"}
                   </span>
                 </div>
                 <div className="border-t border-border pt-3">
                   <div className="flex justify-between">
                     <span className="font-medium">Total</span>
                     <span className="font-display text-xl font-bold text-primary">
-                      {(totalPrice + (subtotal < 2500000 ? 125000 : 0)).toLocaleString('fr-GN')} GNF
+                      {(totalPrice + shipping).toLocaleString('fr-GN')} GNF
                     </span>
                   </div>
                 </div>

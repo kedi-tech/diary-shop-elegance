@@ -1,17 +1,31 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import { getNewProducts } from "@/data/products";
+import { getProducts } from "@/api/products";
+import { adaptProduct } from "@/lib/adaptProduct";
+import { Product } from "@/types/product";
 import { ProductCard } from "@/components/products/ProductCard";
 import { Button } from "@/components/ui/button";
 
 export const NewArrivals = () => {
-  const newProducts = getNewProducts();
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    getProducts().then((data) => {
+      if (Array.isArray(data)) {
+        // Take the last 4 products (most recently added)
+        const adapted = data.map(adaptProduct);
+        setProducts(adapted.slice(-4).reverse());
+      }
+    });
+  }, []);
+
+  if (products.length === 0) return null;
 
   return (
     <section className="section-padding bg-primary-light/30">
       <div className="container-custom px-4">
-        {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
           <div>
             <motion.span
@@ -31,7 +45,7 @@ export const NewArrivals = () => {
               Derniers Arrivages
             </motion.h2>
           </div>
-          <Link to="/catalogue?new=true">
+          <Link to="/catalogue">
             <Button variant="ghost" className="group">
               Voir tout
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -39,9 +53,8 @@ export const NewArrivals = () => {
           </Link>
         </div>
 
-        {/* Products Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-          {newProducts.slice(0, 4).map((product, index) => (
+          {products.map((product, index) => (
             <ProductCard key={product.id} product={product} index={index} />
           ))}
         </div>

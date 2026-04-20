@@ -7,14 +7,14 @@ export const Footer = () => {
   return (
     <footer className="bg-secondary text-secondary-foreground">
       {/* Newsletter */}
-      <div className="border-b border-secondary-foreground/10">
+      {/* <div className="border-b border-secondary-foreground/10">
         <div className="container-custom py-12 px-4">
           <div className="max-w-xl mx-auto text-center">
             <h3 className="font-display text-2xl mb-2">Restez connectée</h3>
             <p className="text-secondary-foreground/80 mb-6">
               Inscrivez-vous pour recevoir nos offres exclusives et nouveautés
             </p>
-            <form className="flex gap-2">
+            <form className="flex flex-col sm:flex-row gap-2">
               <Input
                 type="email"
                 placeholder="Votre email"
@@ -26,7 +26,7 @@ export const Footer = () => {
             </form>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Main Footer */}
       <div className="container-custom py-12 px-4">

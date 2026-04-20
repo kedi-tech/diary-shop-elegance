@@ -2,13 +2,39 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { getProducts } from "@/api/products";
+
+interface HeroProduct {
+  id: string;
+  name: string;
+  price: number;
+  images: { url: string }[];
+}
 
 export const HeroSection = () => {
+  const [product, setProduct] = useState<HeroProduct | null>(null);
+
+  useEffect(() => {
+    getProducts().then((data) => {
+      if (Array.isArray(data) && data.length > 0) {
+        const withImages = data.filter((p: HeroProduct) => p.images?.length > 0);
+        if (withImages.length > 0) {
+          const random = withImages[Math.floor(Math.random() * withImages.length)];
+          setProduct(random);
+        }
+      }
+    });
+  }, []);
+
+  const heroImage = product?.images[0]?.url ?? "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800&q=80";
+  const cardImage = product?.images[0]?.url ?? "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=200&q=80";
+
   return (
-    <section className="relative min-h-[90vh] flex items-center overflow-hidden">
+    <section className="relative min-h-[70vh] md:min-h-[90vh] flex items-center overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary-light via-background to-secondary-light" />
-      
+
       {/* Decorative Elements */}
       <div className="absolute top-20 right-10 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
       <div className="absolute bottom-20 left-10 w-80 h-80 bg-secondary/5 rounded-full blur-3xl" />
@@ -24,16 +50,16 @@ export const HeroSection = () => {
             <span className="inline-block text-sm font-medium text-primary tracking-wider uppercase mb-4">
               Nouvelle Collection
             </span>
-            
-            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-foreground leading-tight mb-6">
+
+            <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-foreground leading-tight mb-4 md:mb-6">
               Révélez votre{" "}
               <span className="gradient-text">style</span>
               <br />
               unique
             </h1>
 
-            <p className="text-lg md:text-xl text-muted-foreground max-w-lg mb-8">
-              Découvrez notre collection exclusive de vêtements et accessoires pour femmes. 
+            <p className="text-base md:text-lg lg:text-xl text-muted-foreground max-w-lg mb-6 md:mb-8">
+              Découvrez notre collection exclusive de vêtements et accessoires pour femmes.
               Qualité premium, style intemporel.
             </p>
 
@@ -52,18 +78,18 @@ export const HeroSection = () => {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-8 mt-12 pt-8 border-t border-border">
+            <div className="grid grid-cols-3 gap-4 md:gap-8 mt-8 md:mt-12 pt-6 md:pt-8 border-t border-border">
               <div>
-                <span className="block font-display text-3xl font-bold text-primary">500+</span>
-                <span className="text-sm text-muted-foreground">Produits</span>
+                <span className="block font-display text-2xl md:text-3xl font-bold text-primary">500+</span>
+                <span className="text-xs md:text-sm text-muted-foreground">Produits</span>
               </div>
               <div>
-                <span className="block font-display text-3xl font-bold text-primary">10k+</span>
-                <span className="text-sm text-muted-foreground">Clientes</span>
+                <span className="block font-display text-2xl md:text-3xl font-bold text-primary">10k+</span>
+                <span className="text-xs md:text-sm text-muted-foreground">Clientes</span>
               </div>
               <div>
-                <span className="block font-display text-3xl font-bold text-primary">4.9</span>
-                <span className="text-sm text-muted-foreground">Note moyenne</span>
+                <span className="block font-display text-2xl md:text-3xl font-bold text-primary">4.9</span>
+                <span className="text-xs md:text-sm text-muted-foreground">Note moyenne</span>
               </div>
             </div>
           </motion.div>
@@ -77,11 +103,11 @@ export const HeroSection = () => {
           >
             <div className="relative z-10">
               <img
-                src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800&q=80"
-                alt="Fashion collection"
-                className="w-full rounded-2xl shadow-hover"
+                src={heroImage}
+                alt={product?.name ?? "Fashion collection"}
+                className="w-full rounded-2xl shadow-hover object-cover aspect-[3/4]"
               />
-              
+
               {/* Floating Card */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -89,19 +115,29 @@ export const HeroSection = () => {
                 transition={{ delay: 0.6 }}
                 className="absolute -bottom-6 -left-6 bg-card p-4 rounded-xl shadow-elegant"
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full overflow-hidden">
-                    <img
-                      src="https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=200&q=80"
-                      alt="Product"
-                      className="w-full h-full object-cover"
-                    />
+                {product ? (
+                  <Link to={`/produit/${product.id}`} className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full overflow-hidden shrink-0">
+                      <img
+                        src={cardImage}
+                        alt={product.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <p className="font-medium text-sm line-clamp-1 max-w-[140px]">{product.name}</p>
+                      <p className="text-primary font-semibold">{product.price.toLocaleString("fr-GN")} GNF</p>
+                    </div>
+                  </Link>
+                ) : (
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-muted animate-pulse" />
+                    <div className="space-y-1.5">
+                      <div className="w-28 h-3 bg-muted rounded animate-pulse" />
+                      <div className="w-20 h-3 bg-muted rounded animate-pulse" />
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-medium text-sm">Robe Élégante</p>
-                    <p className="text-primary font-semibold">89 990 FCFA</p>
-                  </div>
-                </div>
+                )}
               </motion.div>
             </div>
 

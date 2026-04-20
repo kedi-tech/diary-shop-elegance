@@ -1,17 +1,29 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import { products } from "@/data/products";
+import { getProducts } from "@/api/products";
+import { adaptProduct } from "@/lib/adaptProduct";
+import { Product } from "@/types/product";
 import { ProductCard } from "@/components/products/ProductCard";
 import { Button } from "@/components/ui/button";
 
 export const FeaturedProducts = () => {
-  const featuredProducts = products.slice(0, 4);
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    getProducts().then((data) => {
+      if (Array.isArray(data)) {
+        setProducts(data.map(adaptProduct).slice(0, 4));
+      }
+    });
+  }, []);
+
+  if (products.length === 0) return null;
 
   return (
     <section className="section-padding">
       <div className="container-custom px-4">
-        {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
           <div>
             <motion.span
@@ -39,9 +51,8 @@ export const FeaturedProducts = () => {
           </Link>
         </div>
 
-        {/* Products Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-          {featuredProducts.map((product, index) => (
+          {products.map((product, index) => (
             <ProductCard key={product.id} product={product} index={index} />
           ))}
         </div>
