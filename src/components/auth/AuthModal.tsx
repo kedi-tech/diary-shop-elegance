@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Eye, EyeOff, Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,6 +20,7 @@ export const AuthModal = ({ open, onClose, defaultTab = "login" }: AuthModalProp
   const [showPassword, setShowPassword] = useState(false);
   const { login, register } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [registerData, setRegisterData] = useState({
@@ -36,6 +38,7 @@ export const AuthModal = ({ open, onClose, defaultTab = "login" }: AuthModalProp
       await login(loginData.email, loginData.password);
       toast({ title: "Connexion réussie", description: `Bienvenue !` });
       onClose();
+      navigate("/compte");
     } catch (err: any) {
       toast({
         title: "Échec de connexion",
@@ -54,6 +57,7 @@ export const AuthModal = ({ open, onClose, defaultTab = "login" }: AuthModalProp
       await register({ ...registerData, type: "INDIVIDUAL" });
       toast({ title: "Compte créé", description: "Bienvenue sur Diary Shop !" });
       onClose();
+      navigate("/compte");
     } catch (err: any) {
       toast({
         title: "Échec de l'inscription",

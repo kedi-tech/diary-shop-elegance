@@ -88,24 +88,24 @@ export const Footer = () => {
             <h4 className="font-display text-lg mb-4">Aide</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <a href="#" className="text-secondary-foreground/80 hover:text-secondary-foreground transition-colors">
+                <Link to="/faq" className="text-secondary-foreground/80 hover:text-secondary-foreground transition-colors">
                   FAQ
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-secondary-foreground/80 hover:text-secondary-foreground transition-colors">
+                <Link to="/livraison" className="text-secondary-foreground/80 hover:text-secondary-foreground transition-colors">
                   Livraison
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-secondary-foreground/80 hover:text-secondary-foreground transition-colors">
+                <Link to="/retours" className="text-secondary-foreground/80 hover:text-secondary-foreground transition-colors">
                   Retours & Échanges
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-secondary-foreground/80 hover:text-secondary-foreground transition-colors">
+                <Link to="/guide-des-tailles" className="text-secondary-foreground/80 hover:text-secondary-foreground transition-colors">
                   Guide des tailles
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -115,12 +115,12 @@ export const Footer = () => {
             <h4 className="font-display text-lg mb-4">Contact</h4>
             <ul className="space-y-3 text-sm">
               <li className="flex items-center gap-3 text-secondary-foreground/80">
-                <Phone className="h-4 w-4" />
-                <span>+225 07 00 00 00 00</span>
+                <Phone className="h-4 w-4 shrink-0" />
+                <a href="tel:+22407000000" className="hover:text-secondary-foreground transition-colors">+224 07 00 00 00</a>
               </li>
               <li className="flex items-center gap-3 text-secondary-foreground/80">
-                <Mail className="h-4 w-4" />
-                <span>contact@diaryshop.com</span>
+                <Mail className="h-4 w-4 shrink-0" />
+                <a href="mailto:contact@diaryshop.com" className="hover:text-secondary-foreground transition-colors">contact@diaryshop.com</a>
               </li>
               <li className="flex items-start gap-3 text-secondary-foreground/80">
                 <MapPin className="h-4 w-4 mt-0.5" />
@@ -137,12 +137,12 @@ export const Footer = () => {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-secondary-foreground/60">
             <p>© 2024 Diary Shop. Tous droits réservés.</p>
             <div className="flex gap-6">
-              <a href="#" className="hover:text-secondary-foreground transition-colors">
+              <Link to="/mentions-legales" className="hover:text-secondary-foreground transition-colors">
                 Mentions légales
-              </a>
-              <a href="#" className="hover:text-secondary-foreground transition-colors">
+              </Link>
+              <Link to="/confidentialite" className="hover:text-secondary-foreground transition-colors">
                 Politique de confidentialité
-              </a>
+              </Link>
             </div>
           </div>
         </div>

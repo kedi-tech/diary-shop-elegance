@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   User, Mail, Phone, MapPin, LogOut, Edit2, Check, X,
-  Loader2, Package, ChevronRight, ShoppingBag, Heart,
+  Loader2, Package, ChevronRight, ChevronLeft, ShoppingBag, Heart,
 } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -11,8 +11,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/context/AuthContext";
 import { useFavourites } from "@/context/FavouritesContext";
-import { updateClientInfos } from "@/api/clients";
-import { getClientOrders, type Order } from "@/api/orders";
+import { updateClientInfos, getCurrentClient } from "@/api/clients";
+import { type Order } from "@/api/orders";
 import { useToast } from "@/hooks/use-toast";
 
 const STATUS_LABEL: Record<string, { label: string; className: string }> = {
@@ -28,7 +28,7 @@ const statusInfo = (status: string) =>
   STATUS_LABEL[status?.toUpperCase()] ?? { label: status, className: "bg-muted text-muted-foreground" };
 
 const ProfilePage = () => {
-  const { user, token, logout } = useAuth();
+  const { user, token, loading, logout } = useAuth();
   const { favourites } = useFavourites();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -40,17 +40,24 @@ const ProfilePage = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(true);
   const [ordersError, setOrdersError] = useState("");
+  const [ordersPage, setOrdersPage] = useState(1);
+  const ORDERS_PER_PAGE = 5;
 
   useEffect(() => {
+    if (loading) return;
     if (!user) { navigate("/"); return; }
     setForm({ name: user.name ?? "", email: user.email ?? "", phone: user.phone ?? "", address: user.address ?? "" });
-  }, [user, navigate]);
+  }, [user, loading, navigate]);
 
   useEffect(() => {
     if (!token) return;
     setOrdersLoading(true);
-    getClientOrders(token)
-      .then(setOrders)
+    getCurrentClient(token)
+      .then((data) => {
+        const client = data.client ?? data;
+        const raw = Array.isArray(client?.orders) ? client.orders : [];
+        setOrders([...raw].sort((a, b) => new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime()));
+      })
       .catch((err) => setOrdersError(err?.message ?? "Impossible de charger les commandes."))
       .finally(() => setOrdersLoading(false));
   }, [token]);
@@ -76,7 +83,7 @@ const ProfilePage = () => {
 
   const handleLogout = () => { logout(); navigate("/"); };
 
-  if (!user) return null;
+  if (loading || !user) return null;
 
   const initials = (user.name ?? "?")
     .split(" ").map((n) => n[0]).filter(Boolean).slice(0, 2).join("").toUpperCase();
@@ -163,52 +170,80 @@ const ProfilePage = () => {
                   </Button>
                 </Link>
               </div>
-            ) : (
-              <div className="space-y-3">
-                {orders.map((order) => {
-                  const { label, className } = statusInfo(order.status);
-                  const date = order.createdAt
-                    ? new Date(order.createdAt).toLocaleDateString("fr-GN", { day: "numeric", month: "long", year: "numeric" })
-                    : "";
-                  return (
-                    <div key={order.id} className="border border-border rounded-lg p-4 space-y-3">
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <p className="font-mono text-sm font-semibold">DS-{String(order.id).slice(-8).toUpperCase()}</p>
-                          {date && <p className="text-xs text-muted-foreground mt-0.5">{date}</p>}
-                        </div>
-                        <span className={`text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ${className}`}>
-                          {label}
-                        </span>
-                      </div>
-
-                      {order.items?.length > 0 && (
-                        <div className="space-y-1.5">
-                          {order.items.map((item) => (
-                            <div key={item.id} className="flex items-center gap-2 text-sm">
-                              {item.product?.images?.[0]?.url && (
-                                <img src={item.product.images[0].url} alt={item.product.name} className="w-8 h-10 object-cover rounded" />
-                              )}
-                              <span className="flex-1 truncate text-muted-foreground">
-                                {item.product?.name ?? `Produit #${item.productId}`}
-                              </span>
-                              <span className="shrink-0">×{item.quantity}</span>
+            ) : (() => {
+              const totalPages = Math.ceil(orders.length / ORDERS_PER_PAGE);
+              const paginated = orders.slice((ordersPage - 1) * ORDERS_PER_PAGE, ordersPage * ORDERS_PER_PAGE);
+              return (
+                <>
+                  <div className="space-y-3">
+                    {paginated.map((order) => {
+                      const { label, className } = statusInfo(order.status);
+                      const date = order.createdAt
+                        ? new Date(order.createdAt).toLocaleDateString("fr-GN", { day: "numeric", month: "long", year: "numeric" })
+                        : "";
+                      return (
+                        <div key={order.id} className="border border-border rounded-lg p-4 space-y-3">
+                          <div className="flex items-start justify-between gap-3">
+                            <div>
+                              <p className="font-mono text-sm font-semibold">DS-{String(order.id).slice(-8).toUpperCase()}</p>
+                              {date && <p className="text-xs text-muted-foreground mt-0.5">{date}</p>}
                             </div>
-                          ))}
-                        </div>
-                      )}
+                            <span className={`text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ${className}`}>
+                              {label}
+                            </span>
+                          </div>
 
-                      <div className="flex items-center justify-between pt-1 border-t border-border/50">
-                        <span className="text-xs text-muted-foreground">{order.paymentMethod}</span>
-                        <span className="font-semibold text-primary text-sm">
-                          {order.total.toLocaleString("fr-GN")} GNF
-                        </span>
-                      </div>
+                          {order.items?.length > 0 && (
+                            <div className="space-y-1.5">
+                              {order.items.map((item) => (
+                                <div key={item.id} className="flex items-center gap-2 text-sm">
+                                  {item.product?.images?.[0]?.url && (
+                                    <img src={item.product.images[0].url} alt={item.product.name} className="w-8 h-10 object-cover rounded" />
+                                  )}
+                                  <span className="flex-1 truncate text-muted-foreground">
+                                    {item.product?.name ?? `Produit #${item.productId}`}
+                                  </span>
+                                  <span className="shrink-0">×{item.quantity}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+
+                          <div className="flex items-center justify-between pt-1 border-t border-border/50">
+                            <span className="text-xs text-muted-foreground">{order.paymentMethod}</span>
+                            <span className="font-semibold text-primary text-sm">
+                              {order.total.toLocaleString("fr-GN")} GNF
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {totalPages > 1 && (
+                    <div className="flex items-center justify-between mt-4 pt-4 border-t border-border/50">
+                      <button
+                        onClick={() => setOrdersPage((p) => Math.max(1, p - 1))}
+                        disabled={ordersPage === 1}
+                        className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                      >
+                        <ChevronLeft className="h-4 w-4" /> Précédent
+                      </button>
+                      <span className="text-xs text-muted-foreground">
+                        Page {ordersPage} / {totalPages}
+                      </span>
+                      <button
+                        onClick={() => setOrdersPage((p) => Math.min(totalPages, p + 1))}
+                        disabled={ordersPage === totalPages}
+                        className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                      >
+                        Suivant <ChevronRight className="h-4 w-4" />
+                      </button>
                     </div>
-                  );
-                })}
-              </div>
-            )}
+                  )}
+                </>
+              );
+            })()}
           </div>
 
           {/* Wishlist preview */}

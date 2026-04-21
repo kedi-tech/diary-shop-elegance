@@ -1,35 +1,27 @@
 const API_URL = import.meta.env.VITE_API_URL;
 
 export type OrderItem = {
-  id: string;
-  productId: string;
+  id: string | number;
+  productId: string | number;
   quantity: number;
   price: number;
-  size?: string;
   color?: string;
-  product?: { id: string; name: string; images?: { url: string }[] };
+  size?: string;
+  product?: {
+    id: string | number;
+    name: string;
+    images?: { url: string }[];
+  };
 };
 
 export type Order = {
-  id: string;
-  total: number;
+  id: string | number;
   status: string;
+  total: number;
   paymentMethod: string;
-  address: string;
-  createdAt: string;
+  address?: string;
+  createdAt?: string;
   items: OrderItem[];
-};
-
-export const getClientOrders = async (token: string): Promise<Order[]> => {
-  const response = await fetch(`${API_URL}/api/v1/orders/my-orders`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  if (!response.ok) {
-    const errorText = await response.text().catch(() => "");
-    throw new Error(`Failed to fetch orders (${response.status}): ${errorText || response.statusText}`);
-  }
-  const data = await response.json().catch(() => []);
-  return Array.isArray(data) ? data : (data.orders ?? data.data ?? []);
 };
 
 export type CreateOrderItem = {

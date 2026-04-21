@@ -15,6 +15,12 @@ import FavouritesPage from "./pages/FavouritesPage";
 import ProfilePage from "./pages/ProfilePage";
 import ConfirmationPage from "./pages/ConfirmationPage";
 import PaymentFailedPage from "./pages/PaymentFailedPage";
+import FAQPage from "./pages/FAQPage";
+import LivraisonPage from "./pages/LivraisonPage";
+import RetoursPage from "./pages/RetoursPage";
+import GuideTaillesPage from "./pages/GuideTaillesPage";
+import MentionsLegalesPage from "./pages/MentionsLegalesPage";
+import ConfidentialitePage from "./pages/ConfidentialitePage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,6 +44,12 @@ const App = () => (
                 <Route path="/compte" element={<ProfilePage />} />
                 <Route path="/confirmation" element={<ConfirmationPage />} />
                 <Route path="/paiement-echoue" element={<PaymentFailedPage />} />
+                <Route path="/faq" element={<FAQPage />} />
+                <Route path="/livraison" element={<LivraisonPage />} />
+                <Route path="/retours" element={<RetoursPage />} />
+                <Route path="/guide-des-tailles" element={<GuideTaillesPage />} />
+                <Route path="/mentions-legales" element={<MentionsLegalesPage />} />
+                <Route path="/confidentialite" element={<ConfidentialitePage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </TooltipProvider>

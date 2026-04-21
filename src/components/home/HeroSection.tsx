@@ -31,7 +31,7 @@ export const HeroSection = () => {
   const cardImage = product?.images[0]?.url ?? "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=200&q=80";
 
   return (
-    <section className="relative min-h-[70vh] md:min-h-[90vh] flex items-center overflow-hidden">
+    <section className="relative flex items-center overflow-hidden py-8 md:py-12">
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary-light via-background to-secondary-light" />
 
@@ -47,18 +47,18 @@ export const HeroSection = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <span className="inline-block text-sm font-medium text-primary tracking-wider uppercase mb-4">
+            <span className="inline-block text-xs font-medium text-primary tracking-wider uppercase mb-2">
               Nouvelle Collection
             </span>
 
-            <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-foreground leading-tight mb-4 md:mb-6">
+            <h1 className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-foreground leading-tight mb-3 md:mb-4">
               Révélez votre{" "}
               <span className="gradient-text">style</span>
               <br />
               unique
             </h1>
 
-            <p className="text-base md:text-lg lg:text-xl text-muted-foreground max-w-lg mb-6 md:mb-8">
+            <p className="text-sm md:text-base lg:text-lg text-muted-foreground max-w-lg mb-4 md:mb-6">
               Découvrez notre collection exclusive de vêtements et accessoires pour femmes.
               Qualité premium, style intemporel.
             </p>
@@ -78,7 +78,7 @@ export const HeroSection = () => {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-4 md:gap-8 mt-8 md:mt-12 pt-6 md:pt-8 border-t border-border">
+            <div className="grid grid-cols-3 gap-4 md:gap-8 mt-4 md:mt-6 pt-4 md:pt-6 border-t border-border">
               <div>
                 <span className="block font-display text-2xl md:text-3xl font-bold text-primary">500+</span>
                 <span className="text-xs md:text-sm text-muted-foreground">Produits</span>
@@ -99,13 +99,13 @@ export const HeroSection = () => {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="relative hidden lg:block"
+            className="relative block"
           >
             <div className="relative z-10">
               <img
                 src={heroImage}
                 alt={product?.name ?? "Fashion collection"}
-                className="w-full rounded-2xl shadow-hover object-cover aspect-[3/4]"
+                className="w-full rounded-2xl shadow-hover object-cover aspect-[4/3] lg:aspect-[3/4]"
               />
 
               {/* Floating Card */}
@@ -113,7 +113,7 @@ export const HeroSection = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
-                className="absolute -bottom-6 -left-6 bg-card p-4 rounded-xl shadow-elegant"
+                className="absolute -bottom-6 -left-6 bg-card p-4 rounded-xl shadow-elegant hidden sm:flex"
               >
                 {product ? (
                   <Link to={`/produit/${product.id}`} className="flex items-center gap-3">

@@ -229,9 +229,9 @@ export const Header = () => {
                       <Button variant="outline" className="w-full justify-start gap-3 h-10" onClick={() => { setIsMobileMenuOpen(false); navigate("/compte"); }}>
                         <User className="h-4 w-4" /> {(user.name ?? "Compte").split(" ")[0]}
                       </Button>
-                      <Button variant="outline" className="w-full justify-start gap-3 h-10" onClick={() => { setIsMobileMenuOpen(false); logout(); }}>
+                      {/* <Button variant="outline" className="w-full justify-start gap-3 h-10" onClick={() => { setIsMobileMenuOpen(false); logout(); }}>
                         <LogOut className="h-4 w-4" /> Se déconnecter
-                      </Button>
+                      </Button> */}
                     </>
                   ) : (
                     <Button variant="outline" className="w-full justify-start gap-3 h-10"
@@ -241,7 +241,7 @@ export const Header = () => {
                     </Button>
                   )}
                   <Link to="/favoris" onClick={() => setIsMobileMenuOpen(false)}>
-                    <Button variant="outline" className="w-full justify-start gap-3 h-10">
+                    <Button variant="outline" className="w-full justify-start gap-3 h-10 my-2">
                       <Heart className="h-4 w-4" /> Mes favoris {favourites.length > 0 && `(${favourites.length})`}
                     </Button>
                   </Link>
