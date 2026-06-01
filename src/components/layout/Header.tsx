@@ -65,11 +65,8 @@ export const Header = () => {
             </Button>
 
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-2 shrink-0">
-              <div className="flex flex-col items-center">
-                <span className="font-display text-xl sm:text-2xl md:text-3xl font-bold text-primary tracking-tight">DIARY</span>
-                <span className="text-[8px] sm:text-[10px] md:text-xs tracking-[0.3em] text-secondary font-medium -mt-1">SHOP</span>
-              </div>
+            <Link to="/" className="flex items-center shrink-0">
+              <img src="/logo.png" alt="Diary Shop" className="h-10 sm:h-12 md:h-14 w-auto" />
             </Link>
 
             {/* Desktop Navigation */}
