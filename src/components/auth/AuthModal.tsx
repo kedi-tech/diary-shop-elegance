@@ -11,10 +11,11 @@ import { useToast } from "@/hooks/use-toast";
 interface AuthModalProps {
   open: boolean;
   onClose: () => void;
+  onSuccess?: () => void;
   defaultTab?: "login" | "register";
 }
 
-export const AuthModal = ({ open, onClose, defaultTab = "login" }: AuthModalProps) => {
+export const AuthModal = ({ open, onClose, onSuccess, defaultTab = "login" }: AuthModalProps) => {
   const [tab, setTab] = useState<"login" | "register">(defaultTab);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -37,8 +38,12 @@ export const AuthModal = ({ open, onClose, defaultTab = "login" }: AuthModalProp
     try {
       await login(loginData.email, loginData.password);
       toast({ title: "Connexion réussie", description: `Bienvenue !` });
-      onClose();
-      navigate("/compte");
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        onClose();
+        navigate("/compte");
+      }
     } catch (err: any) {
       toast({
         title: "Échec de connexion",
@@ -56,8 +61,12 @@ export const AuthModal = ({ open, onClose, defaultTab = "login" }: AuthModalProp
     try {
       await register({ ...registerData, type: "INDIVIDUAL" });
       toast({ title: "Compte créé", description: "Bienvenue sur Diary Shop !" });
-      onClose();
-      navigate("/compte");
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        onClose();
+        navigate("/compte");
+      }
     } catch (err: any) {
       toast({
         title: "Échec de l'inscription",

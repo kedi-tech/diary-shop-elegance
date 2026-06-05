@@ -28,7 +28,7 @@ const statusInfo = (status: string) =>
   STATUS_LABEL[status?.toUpperCase()] ?? { label: status, className: "bg-muted text-muted-foreground" };
 
 const ProfilePage = () => {
-  const { user, token, loading, logout } = useAuth();
+  const { user, token, loading, logout, updateUser } = useAuth();
   const { favourites } = useFavourites();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -55,6 +55,18 @@ const ProfilePage = () => {
     getCurrentClient(token)
       .then((data) => {
         const client = data.client ?? data;
+        updateUser({
+          name: client.name,
+          email: client.email,
+          phone: client.phone,
+          address: client.address,
+        });
+        setForm({
+          name: client.name ?? "",
+          email: client.email ?? "",
+          phone: client.phone ?? "",
+          address: client.address ?? "",
+        });
         const raw = Array.isArray(client?.orders) ? client.orders : [];
         setOrders([...raw].sort((a, b) => new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime()));
       })
@@ -67,6 +79,7 @@ const ProfilePage = () => {
     setSaving(true);
     try {
       await updateClientInfos(token, { name: form.name, phone: form.phone, address: form.address });
+      updateUser({ name: form.name, phone: form.phone, address: form.address });
       toast({ title: "Profil mis à jour" });
       setEditing(false);
     } catch (err: any) {

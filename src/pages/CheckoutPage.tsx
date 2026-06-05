@@ -25,7 +25,7 @@ const CheckoutPage = () => {
   const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState("cash");
+  const [paymentMethod, setPaymentMethod] = useState("orange");
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [pollingState, setPollingState] = useState<PollingState>("idle");
   const [pendingOrderId, setPendingOrderId] = useState<string | null>(null);
@@ -297,16 +297,8 @@ const CheckoutPage = () => {
                     <RadioGroupItem value="orange" id="orange" />
                     <Smartphone className="h-5 w-5 text-primary" />
                     <div className="flex-1">
-                      <p className="font-medium">Orange Money</p>
-                      <p className="text-sm text-muted-foreground">Paiement sécurisé via Orange Money</p>
-                    </div>
-                  </label>
-                  <label className={`flex items-center gap-4 p-4 rounded-lg border-2 cursor-pointer transition-colors mt-3 ${paymentMethod === "card" ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"}`}>
-                    <RadioGroupItem value="card" id="card" />
-                    <CreditCard className="h-5 w-5 text-primary" />
-                    <div className="flex-1">
-                      <p className="font-medium">Carte bancaire</p>
-                      <p className="text-sm text-muted-foreground">Paiement sécurisé par carte visa / mastercard</p>
+                      <p className="font-medium">Mobile Money</p>
+                      <p className="text-sm text-muted-foreground">Paiement sécurisé via Mobile Money</p>
                     </div>
                   </label>
                 </RadioGroup>
@@ -377,9 +369,10 @@ const CheckoutPage = () => {
 
       <AuthModal
         open={isAuthModalOpen}
+        onSuccess={() => setIsAuthModalOpen(false)}
         onClose={() => {
           setIsAuthModalOpen(false);
-          if (!user) navigate("/panier");
+          navigate("/panier");
         }}
       />
     </Layout>
